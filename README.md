@@ -1,2 +1,3 @@
-# hello-world
-Just a beginning
+## Curious Learning
+
+The repo for all personal projects
