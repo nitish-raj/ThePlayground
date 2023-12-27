@@ -1,0 +1,16 @@
+**/curiouslearn/*
+**/data/*
+**/log/*
+**/airflow-materials/*
+
+
+*.ini
+*.lock
+*.log
+
+.venv
+**.whl
+**.tar.gz
+
+
+tests.ipynb
