@@ -1,3 +1,3 @@
-## Curious Learning
+## The Playground
 
-The repo for all personal projects
+The repo for personal projects
