@@ -13,3 +13,9 @@
 
 
 tests.ipynb
+
+**/google-cloud-sdk/
+
+.config
+
+*.db
