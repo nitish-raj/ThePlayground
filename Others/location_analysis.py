@@ -10,9 +10,16 @@ from configparser import ConfigParser
 class Place:
     place_id: str
     name: str
-    address: str
+    vicinity: str
     latitude: float
     longitude: float
+
+@dataclass
+class PlaceDetail:
+    place_id: str
+    name: str
+    address: str
+    phoneNumber: str
     website: str
 
 def format_coordinates(latitude, longitude):
@@ -45,7 +52,7 @@ class GoogleMapsClient:
             response = requests.get(url)
             if response.status_code == 200:
                 places = response.json()
-                all_places.extend(places)
+                all_places.extend(places['results'])
                 next_page_token = places.get('next_page_token')
                 if next_page_token:
                     time.sleep(2)  # Add a delay before making the next request
@@ -59,34 +66,91 @@ class GoogleMapsClient:
         return [self._convert_to_place(result) for result in all_places]
 
     def _convert_to_place(self, result):
-        place_id = result['results']['place_id']
-        name = result['results']['name']
-        address = result['results'].get('vicinity', 'N/A')
-        latitude = result['results']['geometry']['location']['lat']
-        longitude = result['results']['geometry']['location']['lng']
-        website = result['results'].get('website', 'N/A')
-        return Place(place_id, name, address, latitude, longitude, website)
+        place_id = result['place_id']
+        name = result['name']
+        vicinity = result.get('vicinity', 'N/A')
+        latitude = result['geometry']['location']['lat']
+        longitude = result['geometry']['location']['lng']
+        return Place(place_id, name, vicinity, latitude, longitude)
+
+    def get_places_details(self, place_ids):
+        all_place_details = []
+        
+        for place_id in place_ids:
+            details_url = f"https://maps.googleapis.com/maps/api/place/details/json?place_id={place_id}&key={self.api_key}"
+            details_response = requests.get(details_url)
+            place_details = details_response.json()
+            all_place_details.extend(place_details['result'])
+
+        return [self._convert_to_placedetail(result) for result in all_place_details]
+
+    def _convert_to_placedetail(self, result):
+        place_id = result['place_id']
+        name = result['name']
+        address = result['formatted_address']
+        phoneNumber = result.get('formatted_phone_number', 'N/A')
+        website = result.get('website', 'N/A')
+        return PlaceDetail(place_id, name, address, phoneNumber, website)
 
 class DuckDBHandler:
-    def __init__(self, db_path='places.db'):
+    def __init__(self, db_path='places.db', recreate: bool = False):
         self.con = duckdb.connect(db_path)
-        self._create_table()
+        self.recreate = recreate
+        self._create_table(self.recreate)
 
-    def _create_table(self):
-        self.con.execute('''
-        CREATE TABLE IF NOT EXISTS places (
-            place_id VARCHAR,
-            name VARCHAR,
-            address VARCHAR,
-            latitude DOUBLE,
-            longitude DOUBLE,
-            website varchar
-        )
-        ''')
+    def _create_table(self, recreate):
+        if recreate:
+            self.con.execute('''
+            DROP TABLE IF EXISTS places;
+            
+            CREATE TABLE IF NOT EXISTS places (
+                place_id VARCHAR PrimaryKey,
+                name VARCHAR,
+                vicinity VARCHAR,
+                latitude DOUBLE,
+                longitude DOUBLE
+            );
+            
+            CREATE TABLE IF NOT EXISTS placeDetail (
+                        place_id VARCHAR,
+                        name VARCHAR,
+                        address VARCHAR,
+                        phoneNumber VARCHAR,
+                        website VARCHAR      
+            );
+                             
+            ''')
+        else:
+            self.con.execute('''
+            DROP TABLE IF EXISTS places;
+            CREATE TABLE IF NOT EXISTS places (
+                place_id VARCHAR,
+                name VARCHAR,
+                vicinity VARCHAR,
+                latitude DOUBLE,
+                longitude DOUBLE
+            );
+            
+            DROP TABLE IF EXISTS placeDetail;
+            CREATE TABLE IF NOT EXISTS placeDetail (
+                place_id VARCHAR,
+                name VARCHAR,
+                address VARCHAR,
+                phoneNumber VARCHAR,
+                website VARCHAR      
+                );
+            ''')
 
     def insert_places(self, places):
-        data = [[place.place_id, place.name, place.address, place.latitude, place.longitude, place.website] for place in places]
-        df = pd.DataFrame(data, columns=['place_id', 'name', 'address', 'latitude', 'longitude','website'])
+        data = [[place.place_id, place.name, place.vicinity, place.latitude, place.longitude] for place in places]
+        df = pd.DataFrame(data, columns=['place_id', 'name', 'address', 'latitude', 'longitude'])
+        self.con.execute('BEGIN TRANSACTION')
+        self.con.execute('INSERT INTO places SELECT * FROM df')
+        self.con.execute('COMMIT')
+    
+    def insert_place_details(self, placedetail):
+        data = [[detail.place_id, detail.name, detail.address, detail.phoneNumber, detail.website] for detail in placedetail]
+        df = pd.DataFrame(data)
         self.con.execute('BEGIN TRANSACTION')
         self.con.execute('INSERT INTO places SELECT * FROM df')
         self.con.execute('COMMIT')
@@ -95,7 +159,7 @@ class DuckDBHandler:
 if __name__ == "__main__":
     config = ConfigParser()
     config.read("../.config")
-    API_KEY = config['GCP']['API_KEY']
+    API_KEY = config['GCP']['API_KEY']  # Replace with your actual API key
     address = 'Luxembourg'  # The location name
 
     # Create an instance of the Google Maps client
@@ -110,7 +174,8 @@ if __name__ == "__main__":
         # Fetch places and insert into DuckDB
         places = google_maps_client.get_all_places(location, radius)
         if places:
-            duckdb_handler = DuckDBHandler()
+            duckdb_handler = DuckDBHandler(recreate=True)
+            duckdb_handler.insert_places(places)
             duckdb_handler.insert_places(places)
         else:
             print("No places found.")
