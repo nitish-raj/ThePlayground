@@ -5,6 +5,7 @@ import time
 import duckdb
 import pandas as pd
 from configparser import ConfigParser
+import sys
 
 @dataclass
 class Place:
@@ -101,10 +102,13 @@ class DuckDBHandler:
     def _create_table(self, recreate):
         if recreate:
             self.con.execute('''
-            DROP TABLE IF EXISTS places;
+            DROP TABLE IF EXISTS places CASCADE;
+            DROP TABLE IF EXISTS placeDetail;         
+            ''')
             
+        self.con.execute('''
             CREATE TABLE IF NOT EXISTS places (
-                place_id VARCHAR PrimaryKey,
+                place_id VARCHAR PRIMARY KEY,
                 name VARCHAR,
                 vicinity VARCHAR,
                 latitude DOUBLE,
@@ -112,40 +116,20 @@ class DuckDBHandler:
             );
             
             CREATE TABLE IF NOT EXISTS placeDetail (
-                        place_id VARCHAR,
+                        place_id VARCHAR PRIMARY KEY,
                         name VARCHAR,
                         address VARCHAR,
                         phoneNumber VARCHAR,
-                        website VARCHAR      
+                        website VARCHAR,
+                        foreign key (place_id) references places(place_id)      
             );
-                             
-            ''')
-        else:
-            self.con.execute('''
-            DROP TABLE IF EXISTS places;
-            CREATE TABLE IF NOT EXISTS places (
-                place_id VARCHAR,
-                name VARCHAR,
-                vicinity VARCHAR,
-                latitude DOUBLE,
-                longitude DOUBLE
-            );
-            
-            DROP TABLE IF EXISTS placeDetail;
-            CREATE TABLE IF NOT EXISTS placeDetail (
-                place_id VARCHAR,
-                name VARCHAR,
-                address VARCHAR,
-                phoneNumber VARCHAR,
-                website VARCHAR      
-                );
             ''')
 
     def insert_places(self, places):
         data = [[place.place_id, place.name, place.vicinity, place.latitude, place.longitude] for place in places]
         df = pd.DataFrame(data, columns=['place_id', 'name', 'address', 'latitude', 'longitude'])
         self.con.execute('BEGIN TRANSACTION')
-        self.con.execute('INSERT INTO places SELECT * FROM df')
+        self.con.execute('INSERT INTO places SELECT * FROM df where place_id not in (select place_id from places group by 1)')
         self.con.execute('COMMIT')
     
     def insert_place_details(self, placedetail):
@@ -157,10 +141,16 @@ class DuckDBHandler:
 
 #%%
 if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Please provide a location name as an argument.")
+        sys.exit(1)
+    
     config = ConfigParser()
     config.read("../.config")
-    API_KEY = config['GCP']['API_KEY']  # Replace with your actual API key
-    address = 'Luxembourg'  # The location name
+    API_KEY = config['GCP']['API_KEY']
+
+
+    address = sys.argv[1]  # The location name
 
     # Create an instance of the Google Maps client
     google_maps_client = GoogleMapsClient(API_KEY)
@@ -169,14 +159,14 @@ if __name__ == "__main__":
     latitude, longitude = google_maps_client.get_coordinates(address)
     if latitude and longitude:
         location = format_coordinates(latitude, longitude)
-        radius = 15000  # in meters
+        radius = sys.argv[2] if len(sys.argv) > 2 else 15000  # in meters
 
         # Fetch places and insert into DuckDB
         places = google_maps_client.get_all_places(location, radius)
         if places:
-            duckdb_handler = DuckDBHandler(recreate=True)
+            duckdb_handler = DuckDBHandler(recreate=sys.argv[3] if len(sys.argv) > 3 else False) # pass True to recreate the table else False
             duckdb_handler.insert_places(places)
-            duckdb_handler.insert_places(places)
+            # duckdb_handler.insert_places(places)
         else:
             print("No places found.")
     else:
