@@ -8,34 +8,6 @@ from configparser import ConfigParser
 import sys
 import logging
 
-@dataclass
-class Place:
-    place_id: str
-    name: str
-    vicinity: str
-    latitude: float
-    longitude: float
-
-@dataclass
-class PlaceDetail:
-    place_id: str
-    name: str
-    address: str
-    phoneNumber: str
-    website: str
-
-@dataclass
-class GeoName:
-    geonameid: int
-    name: str
-    latitude: float
-    longitude: float
-    country_code: str
-    admin1_code: Optional[str] = None
-    population: Optional[int] = None
-
-
-
 def format_coordinates(latitude, longitude):
     return f"{latitude},{longitude}"
 
@@ -205,8 +177,9 @@ if __name__ == "__main__":
         sys.exit(1)
     
     config = ConfigParser()
-    config.read("../.config")
+    config.read("../../.config")
     API_KEY = config['GCP']['API_KEY']
+    GEONAME_USERNAME = config['GEONAME']['username']
 
 
     address = sys.argv[1]  # The location name
