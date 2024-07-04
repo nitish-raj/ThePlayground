@@ -40,7 +40,7 @@ RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.
 # Switch back to gitpod user
 USER gitpod
 
-WORKDIR /workspace/nitish-raj.github.io
+WORKDIR /workspace/theplayground
 RUN quarto install chromium --no-prompt
 RUN quarto install tinytex --no-prompt
 RUN python3 -m pip install jupyter
