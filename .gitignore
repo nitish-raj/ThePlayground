@@ -19,3 +19,5 @@ tests.ipynb
 .config
 
 *.db
+
+__pycache__

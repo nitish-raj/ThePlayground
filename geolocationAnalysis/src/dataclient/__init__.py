@@ -1,0 +1,2 @@
+from geonames_api import GeoMapClient
+from googlemaps_api import GoogleMapsClient

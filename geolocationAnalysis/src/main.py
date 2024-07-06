@@ -1,10 +1,14 @@
+#%%
 from configparser import ConfigParser
 import sys
-from .dataclient.geonames_api import GoogleMapsClient
-from .database.db_operation import DuckDBHandler
+from .dataclient.geonames_api import GeoMapClient
+from .dataclient.googlemaps_api import GoogleMapsClient
+from .database.duckdb_operation import DuckDBHandler
 
 def format_coordinates(latitude, longitude):
     return f"{latitude},{longitude}"
+
+#%%
 
 def main():
     if len(sys.argv) < 2:

@@ -3,7 +3,7 @@ import pandas as pd
 
 
 class DuckDBHandler:
-    def __init__(self, db_path='../data/places.db', recreate: bool = False):
+    def __init__(self, db_path='../../data/raw/database.db', recreate: bool = False):
         self.con = duckdb.connect(db_path)
         self.recreate = recreate
         self._create_table(self.recreate)
