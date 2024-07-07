@@ -1,52 +1,68 @@
 import duckdb
 import pandas as pd
+from string import Template
+from typing import List, Dict, Any, Union
 
 
 class DuckDBHandler:
-    def __init__(self, db_path='../../data/raw/database.db', recreate: bool = False):
-        self.con = duckdb.connect(db_path)
-        self.recreate = recreate
-        self._create_table(self.recreate)
+    def __init__(self, db_path: str = "../../data/raw/database.db"):
+        self.conn = duckdb.connect(db_path)
 
-    def _create_table(self, recreate):
+    def __del__(self):
+        if self.conn:
+            self.conn.close()
+
+    def create_table_if_not_exists(
+        self, table_name: str, columns: Dict[str, str], recreate: bool = False
+    ):
         if recreate:
-            self.con.execute('''
-            DROP TABLE IF EXISTS places CASCADE;
-            DROP TABLE IF EXISTS placeDetail;         
-            ''')
-            
-        self.con.execute('''
-            CREATE TABLE IF NOT EXISTS places (
-                place_id VARCHAR PRIMARY KEY,
-                name VARCHAR,
-                vicinity VARCHAR,
-                latitude DOUBLE,
-                longitude DOUBLE
-            );
-            
-            CREATE TABLE IF NOT EXISTS placeDetail (
-                        place_id VARCHAR PRIMARY KEY,
-                        name VARCHAR,
-                        address VARCHAR,
-                        phoneNumber VARCHAR,
-                        website VARCHAR,
-                        foreign key (place_id) references places(place_id)      
-            );
-            ''')
+            self._drop_table(table_name)
 
-    def insert_places(self, places):
-        data = [[place.place_id, place.name, place.vicinity, place.latitude, place.longitude] for place in places]
-        df = pd.DataFrame(data, columns=['place_id', 'name', 'vicinity', 'latitude', 'longitude'])
-        self.con.execute('BEGIN TRANSACTION')
-        self.con.execute('INSERT INTO places SELECT * FROM df where place_id not in (select place_id from places group by 1)')
-        self.con.execute('COMMIT')
-    
-    def insert_place_details(self, placedetail):
-        data = [[detail.place_id, detail.name, detail.address, detail.phoneNumber, detail.website] for detail in placedetail]
-        df = pd.DataFrame(data, columns= ['place_id','name','address','phoneNumber', 'website'])
-        self.con.execute('BEGIN TRANSACTION')
-        self.con.execute('INSERT INTO placeDetail SELECT * FROM df where place_id not in (select place_id from placeDetail group by 1)')
-        self.con.execute('COMMIT')
+        column_defs = ", ".join([f"{col} {dtype}" for col, dtype in columns.items()])
+        query = f"""
+        CREATE TABLE IF NOT EXISTS {table_name} (
+            {column_defs}
+        )
+        """
+        self.conn.execute(query)
 
-    def _insert_data(self, data, table_name):
-        self.con.execute(f'INSERT INTO {table_name} VALUES (?)', data)
+    def _drop_table(self, table_name: str):
+        # Drop the table if it exists
+        self.conn.execute(f"DROP TABLE IF EXISTS {table_name}")
+
+    def insert_data(
+        self,
+        table_name: str,
+        data: Union[Dict[str, Any], List[Dict[str, Any]], pd.DataFrame],
+    ):
+        if isinstance(data, pd.DataFrame):
+            self.conn.register("temp_df", data)
+            self.conn.execute(f"INSERT INTO {table_name} SELECT * FROM temp_df")
+            self.conn.unregister("temp_df")
+        else:
+            # Handle dict or list of dicts
+            if not isinstance(data, list):
+                data = [data]
+
+            if not data:
+                return
+
+            columns = ", ".join(data[0].keys())
+            placeholders = ", ".join([f"${i+1}" for i in range(len(data[0]))])
+
+            query = f"""
+            INSERT INTO {table_name} ({columns})
+            VALUES ({placeholders})
+            """
+
+            self.conn.executemany(query, [tuple(row.values()) for row in data])
+
+    def execute_query(self, query: str, params: Union[tuple, Dict[str, Any]] = None):
+        if params:
+            return self.conn.execute(query, params).fetchall()
+        return self.conn.execute(query).fetchall()
+
+    def execute_template_query(self, query_template: str, params: Dict[str, Any]):
+        template = Template(query_template)
+        query = template.substitute(params)
+        return self.execute_query(query)

@@ -1,14 +1,14 @@
 from dataclasses import dataclass
-from typing import Optional
+
 
 @dataclass
 class GeoName:
-    adminCode: int
+    adminCode: str
     longitude: float
-    geonameId: float
+    geonameId: int
     toponymName: float
-    countryId: str
-    fcl:str
+    countryId: int
+    fcl: str
     population: int
     countryCode: str
     name: str

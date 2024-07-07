@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import Optional
 
 @dataclass
 class Place:
@@ -8,6 +7,7 @@ class Place:
     vicinity: str
     latitude: float
     longitude: float
+
 
 @dataclass
 class PlaceDetail:
