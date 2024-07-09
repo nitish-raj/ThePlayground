@@ -7,7 +7,7 @@ import logging
 
 # Configuration
 config = ConfigParser()
-config.read("../../.config")
+config.read(".config")
 
 # Configure logging
 logging.basicConfig(
@@ -28,7 +28,7 @@ class GoogleMapsClient:
 
     def __init__(self, api_key):
         self.api_key = api_key
-        self.base_url = config.get("google_maps", "base_url")
+        self.base_url = config.get("GoogleMaps", "base_url")
 
     def get_coordinates_google(self, address: str) -> Tuple[float, float]:
         """

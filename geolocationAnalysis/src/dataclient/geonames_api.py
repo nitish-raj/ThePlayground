@@ -7,7 +7,7 @@ from configparser import ConfigParser
 
 # Configuration
 config = ConfigParser()
-config.read("../../.config")
+config.read(".config")
 
 
 class GeoMapClient:
@@ -20,8 +20,9 @@ class GeoMapClient:
 
     def __init__(self, username):
         self.username = username
+        self.base_url = f"{config.get('GEONAME', 'base_url')}"
 
-    def get_geonames_data(self, country_code, max_rows=1000):
+    def get_geonames_data(self, country_code, max_rows = None):
         """
         Retrieve geographical location data from the GeoNames API for a given country code.
 
@@ -35,21 +36,19 @@ class GeoMapClient:
         Raises:
             ValueError: If there is an error in the HTTP request or the API response.
         """
-
-        base_url = f"{config.get('GEONAME', 'base_url')}"
         all_data = []
         start_row = 0
-
+        
         while True:
             params = {
                 "country": country_code,
-                "maxRows": max_rows,
+                "maxRows": int(max_rows) if max_rows and max_rows != '' else 1000,
                 "username": self.username,
                 "startRow": start_row,
             }
 
             try:
-                response = requests.get(base_url, params=params)
+                response = requests.get(self.base_url, params=params)
                 response.raise_for_status()
                 data = response.json()
             except requests.exceptions.RequestException as e:
@@ -59,7 +58,7 @@ class GeoMapClient:
                 geonames = data["geonames"]
                 all_data.extend([self._convert_to_geoname(item) for item in geonames])
 
-                if len(geonames) < max_rows:
+                if max_rows is not None and len(geonames) < max_rows:
                     break
 
                 start_row += max_rows

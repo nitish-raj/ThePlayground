@@ -18,7 +18,7 @@ def main():
 
     # Get API keys and credentials from environment variables or config file
     api_key = os.environ.get("GOOGLE_MAPS_API_KEY") or config.get(
-        "GCP", "API_KEY", fallback=None
+        "GoogleMaps", "API_key", fallback=None
     )
     geoname_username = os.environ.get("GEONAME_USERNAME") or config.get(
         "GEONAME", "username", fallback=None

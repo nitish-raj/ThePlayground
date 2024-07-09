@@ -5,7 +5,7 @@ from typing import List, Dict, Any, Union
 
 
 class DuckDBHandler:
-    def __init__(self, db_path: str = "../../data/raw/database.db"):
+    def __init__(self, db_path: str = "data/raw/database.db"):
         self.conn = duckdb.connect(db_path)
 
     def __del__(self):
