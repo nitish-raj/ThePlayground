@@ -4,7 +4,7 @@ import sys
 import os
 from dataclasses import asdict
 import pandas as pd
-
+from tqdm import tqdm
 from .dataclient.geonames_api import GeoMapClient
 from .dataclient.googlemaps_api import GoogleMapsClient
 from .database.duckdb_operation import DuckDBHandler
@@ -44,25 +44,10 @@ def main():
         print("Error: GeoNames username not found in environment or config file.")
         sys.exit(1)
 
-    # Accept address as input from the user
+    # Accept input from the user
     country_code = input("Enter the country code: ")
-
-    # Not required with Geonames API
-    # address = input("Enter the address: ")
- 
-    while True:
-        try:
-            radius = int(input("Enter the radius in meters for Google Maps [default:50000]: "))
-            break
-        except ValueError:
-            print("Invalid input. Please enter an integer.")
-
-    while True:
-        try:
-            max_rows = int(input("Enter the maximum number of rows to fetch from GeoNames [default:1000]: "))
-            break
-        except ValueError:
-            print("Invalid input. Please enter an integer.")
+    radius = int(input("Enter the radius in meters for Google Maps [default:50000]: ") or "50000")
+    max_rows = int(input("Enter the maximum number of rows to fetch from GeoNames [default:1000]: ") or "1000")
 
 
     # Create clients and database handler
@@ -74,6 +59,7 @@ def main():
     geoname_df = geoname_client.get_geonames_data(country_code, max_rows)
     duckdb_handler.insert_data("geonames", geoname_df)
 
+    pbar = tqdm(total=len(geoname_df), desc="Processing Locations:", unit="rows")
     # Process GeoNames data
     for _, row in geoname_df.iterrows():
         location = format_coordinates(row["latitude"], row["longitude"])
@@ -89,6 +75,8 @@ def main():
             if PlaceDetails:
                 place_details_df = pd.DataFrame([asdict(gn) for gn in PlaceDetails])
                 duckdb_handler.insert_data("place_details", place_details_df)
+        
+        pbar.update(1)
 
     print("Data processing completed successfully.")
 
