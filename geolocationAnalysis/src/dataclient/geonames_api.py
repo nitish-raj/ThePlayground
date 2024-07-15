@@ -3,12 +3,6 @@ import time
 from ..models.geoname import GeoName
 from dataclasses import asdict
 import pandas as pd
-from configparser import ConfigParser
-
-# Configuration
-config = ConfigParser()
-config.read(".config")
-
 
 class GeoMapClient:
     """
@@ -18,11 +12,11 @@ class GeoMapClient:
         username (str): The username required for making requests to the GeoNames API.
     """
 
-    def __init__(self, username):
+    def __init__(self, username, base_url):
         self.username = username
-        self.base_url = f"{config.get('GEONAME', 'base_url')}"
+        self.base_url = base_url
 
-    def get_geonames_data(self, country_code, max_rows = None):
+    def get_geonames_data(self, country_code:str , max_rows:int = None) -> pd.DataFrame :
         """
         Retrieve geographical location data from the GeoNames API for a given country code.
 
@@ -42,7 +36,7 @@ class GeoMapClient:
         while True:
             params = {
                 "country": country_code,
-                "maxRows": int(max_rows) if max_rows and max_rows != '' else 1000,
+                "maxRows": max_rows if max_rows and max_rows != '' else 1000,
                 "username": self.username,
                 "startRow": start_row,
             }
@@ -58,7 +52,7 @@ class GeoMapClient:
                 geonames = data["geonames"]
                 all_data.extend([self._convert_to_geoname(item) for item in geonames])
 
-                if max_rows is not None and len(geonames) < max_rows:
+                if max_rows is not None and len(geonames) < int(max_rows):
                     break
 
                 start_row += max_rows

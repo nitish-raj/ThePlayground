@@ -1,19 +1,14 @@
 import requests
 import time
 from ..models.locations import Place, PlaceDetail
-from configparser import ConfigParser
 from typing import List, Tuple
 import logging
 
-# Configuration
-config = ConfigParser()
-config.read(".config")
 
 # Configure logging
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
-
 
 class GoogleMapsClient:
     """
@@ -26,9 +21,9 @@ class GoogleMapsClient:
         api_key (str): The API key required for making requests to the Google Maps API.
     """
 
-    def __init__(self, api_key):
+    def __init__(self, api_key, base_url):
         self.api_key = api_key
-        self.base_url = config.get("GoogleMaps", "base_url")
+        self.base_url = base_url
 
     def get_coordinates_google(self, address: str) -> Tuple[float, float]:
         """
@@ -103,7 +98,7 @@ class GoogleMapsClient:
         all_place_details = []
 
         for place_id in place_ids:
-            details_url = f"{config.get('google_maps', 'base_url')}/place/details/json?place_id={place_id}&key={self.api_key}"
+            details_url = f"{self.base_url}/place/details/json?place_id={place_id}&key={self.api_key}"
             details_response = requests.get(details_url)
             place_details = details_response.json()
 
