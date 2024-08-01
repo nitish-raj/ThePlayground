@@ -1,12 +1,15 @@
 {
 	"name": "Docker in Docker",
 	"build": {
-		"dockerfile": ".gitpod.dockerfile",
+		"dockerfile": ".dockerfile",
 		"context": ".."
 	},
 	"features": {
 		"ghcr.io/devcontainers/features/docker-in-docker:2": {},
-		"ghcr.io/devcontainers-contrib/features/curl-apt-get:1": {}
+		"ghcr.io/devcontainers/features/aws-cli:1": {},
+		"ghcr.io/devcontainers/features/powershell:1": {},
+		"ghcr.io/devcontainers-contrib/features/aws-cdk:2": {},
+		"ghcr.io/devcontainers-contrib/features/spark-sdkman:2": {}
 	},
 	"customizations": {
 		"vscode": {
@@ -22,7 +25,8 @@
 				"GitHub.vscode-pull-request-github",
 				"ms-kubernetes-tools.vscode-kubernetes-tools",
 				"ms-python.debugpy",
-				"ms-python.python","ms-python.vscode-pylance",
+				"ms-python.python",
+				"ms-python.vscode-pylance",
 				"amazonwebservices.aws-toolkit-vscode"
 			],
 			"settings": {
@@ -33,8 +37,8 @@
 	"mounts": [
 		"source=${localWorkspaceFolder}/.git,target=/workspace/.git,type=bind,consistency=cached"
 	],
-	"containerUser": "gitpod",
-	"remoteUser": "gitpod",
+	"containerUser": "vscode",
+	"remoteUser": "vscode",
 	"postCreateCommand": "git config --global credential.helper store && git config --global core.autocrlf input",
 	"runArgs": ["--restart", "always"]
 }
