@@ -66,6 +66,15 @@ class GoogleMapsClient:
         all_places = []
         url = f"{self.base_url}/place/nearbysearch/json?location={location}&radius={radius}&key={self.api_key}"
 
+        payload = {
+            "location": location,
+            
+        }
+
+        headers = {
+            "Content-Type": "application/json",
+        }
+
         while url:
             try:
                 response = requests.get(url)
@@ -98,7 +107,7 @@ class GoogleMapsClient:
         all_place_details = []
 
         for place_id in place_ids:
-            details_url = f"{self.base_url}/place/details/json?place_id={place_id}&key={self.api_key}"
+            details_url = f"{self.base_url}/place/details/{place_id}?key={self.api_key}"
             details_response = requests.get(details_url)
             place_details = details_response.json()
 
