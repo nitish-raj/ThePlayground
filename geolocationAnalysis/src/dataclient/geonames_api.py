@@ -4,6 +4,7 @@ from ..models.geoname import GeoName
 from dataclasses import asdict
 import pandas as pd
 
+
 class GeoMapClient:
     """
     A client for interacting with the GeoNames API.
@@ -16,7 +17,9 @@ class GeoMapClient:
         self.username = username
         self.base_url = base_url
 
-    def get_geonames_data(self, country_code:str , max_rows:int = None) -> pd.DataFrame :
+    def get_geonames_data(
+        self, country_code: str, max_rows: int = None
+    ) -> pd.DataFrame:
         """
         Retrieve geographical location data from the GeoNames API for a given country code.
 
@@ -32,11 +35,11 @@ class GeoMapClient:
         """
         all_data = []
         start_row = 0
-        
+
         while True:
             params = {
                 "country": country_code,
-                "maxRows": max_rows if max_rows and max_rows != '' else 1000,
+                "maxRows": max_rows if max_rows and max_rows != "" else 1000,
                 "username": self.username,
                 "startRow": start_row,
             }

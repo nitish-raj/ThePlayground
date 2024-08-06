@@ -35,24 +35,26 @@ class DuckDBHandler:
         table_name: str,
         data: Union[Dict[str, Any], List[Dict[str, Any]], pd.DataFrame],
     ):
-        
+
         if isinstance(data, pd.DataFrame):
             columns = {}
             for col_name, col_type in data.dtypes.items():
-                if col_type == 'object':
-                    columns[col_name] = 'TEXT'
-                elif col_type == 'int64':
-                    columns[col_name] = 'INTEGER'
-                elif col_type == 'float64':
-                    columns[col_name] = 'REAL'
+                if col_type == "object":
+                    columns[col_name] = "TEXT"
+                elif col_type == "int64":
+                    columns[col_name] = "INTEGER"
+                elif col_type == "float64":
+                    columns[col_name] = "REAL"
                 else:
-                    columns[col_name] = 'TEXT'
+                    columns[col_name] = "TEXT"
 
             self.create_table_if_not_exists(table_name, columns)
             # print(f"Created table : {table_name}")
 
             self.conn.register("temp_df", data)
-            self.conn.execute(f"INSERT INTO {table_name} SELECT * FROM temp_df except select * from {table_name}")
+            self.conn.execute(
+                f"INSERT INTO {table_name} SELECT * FROM temp_df except select * from {table_name}"
+            )
             self.conn.unregister("temp_df")
             # print(f"Data Successfully inserted into Table: {table_name}")
         else:
@@ -65,11 +67,10 @@ class DuckDBHandler:
 
             columns = ", ".join(data[0].keys())
 
-
             placeholders = ", ".join([f"${i+1}" for i in range(len(data[0]))])
 
             self.create_table_if_not_exists(table_name, columns)
-            
+
             query = f"""
             INSERT INTO {table_name} ({columns})
             VALUES ({placeholders})

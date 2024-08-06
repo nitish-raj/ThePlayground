@@ -1,4 +1,3 @@
-#%%
 from configparser import ConfigParser
 import sys
 import os
@@ -12,6 +11,7 @@ from .database.duckdb_operation import DuckDBHandler
 
 def format_coordinates(latitude: float, longitude: float) -> str:
     return f"{latitude},{longitude}"
+
 
 def main():
     # Load configuration from file
@@ -28,12 +28,12 @@ def main():
     )
 
     gmaps_base_url = os.environ.get("GOOGLE_MAPS_BASE_URL") or config.get(
-                        'GoogleMaps', 'base_url', fallback=None
-                        )
+        "GoogleMaps", "base_url", fallback=None
+    )
 
     gnames_base_url = os.environ.get("GOEONAME_BASE_URL") or config.get(
-                        'GEONAME', 'base_url', fallback=None
-                        )
+        "GEONAME", "base_url", fallback=None
+    )
 
     # Check if API keys are provided
     if not api_key:
@@ -46,12 +46,18 @@ def main():
 
     # Accept input from the user
     country_code = input("Enter the country code: ")
-    radius = int(input("Enter the radius in meters for Google Maps [default:50000]: ") or "50000")
-    max_rows = int(input("Enter the maximum number of rows to fetch from GeoNames [default:1000]: ") or "1000")
-
+    radius = int(
+        input("Enter the radius in meters for Google Maps [default:50000]: ") or "50000"
+    )
+    max_rows = int(
+        input(
+            "Enter the maximum number of rows to fetch from GeoNames [default:1000]: "
+        )
+        or "1000"
+    )
 
     # Create clients and database handler
-    google_maps_client = GoogleMapsClient(api_key,gmaps_base_url)
+    google_maps_client = GoogleMapsClient(api_key, gmaps_base_url)
     geoname_client = GeoMapClient(geoname_username, gnames_base_url)
     duckdb_handler = DuckDBHandler()
 
@@ -75,10 +81,11 @@ def main():
             if PlaceDetails:
                 place_details_df = pd.DataFrame([asdict(gn) for gn in PlaceDetails])
                 duckdb_handler.insert_data("place_details", place_details_df)
-        
+
         pbar.update(1)
 
     print("Data processing completed successfully.")
+
 
 if __name__ == "__main__":
     main()

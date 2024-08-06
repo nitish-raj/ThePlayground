@@ -20,10 +20,9 @@ RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.
     curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add - && \
     apt-get update -y && apt-get install -y google-cloud-sdk
 
-# Create vscode user and set permissions
-RUN useradd -ms /bin/bash vscode \
-    && mkdir -p /home/vscode/.local/share/code-server /home/vscode/workspace \
-    && chown -R vscode:vscode /home/vscode/.local/share/code-server /home/vscode/workspace
+
+RUN usermod --login ${USERNAME} --move-home --home /home/${USERNAME} vscode && \
+    groupmod --new-name ${USERNAME} vscode
 
 # Switch to vscode user
 USER vscode
@@ -33,10 +32,10 @@ RUN git config --global core.autocrlf input && \
     git config --global user.email "22993803+nitish-raj@users.noreply.github.com" && \
     git config --global user.name "Nitish"
 
-WORKDIR /workspace/
+WORKDIR /workspace
 
 # Install Jupyter
-RUN python3 -m pip install jupyter
+RUN python3 -m pip install --user jupyter
 
 # Ensure Git is initialized in the workspace
 RUN git init

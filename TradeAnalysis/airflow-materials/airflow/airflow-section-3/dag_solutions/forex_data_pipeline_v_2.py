@@ -9,11 +9,16 @@ default_args = {
     "email_on_retry": False,
     "email": "admin@localhost.com",
     "retries": 1,
-    "retry_delay": timedelta(minutes=5)
+    "retry_delay": timedelta(minutes=5),
 }
 
-with DAG("forex_data_pipeline", start_date=datetime(2021, 1 ,1), 
-    schedule_interval="@daily", default_args=default_args, catchup=False) as dag:
+with DAG(
+    "forex_data_pipeline",
+    start_date=datetime(2021, 1, 1),
+    schedule_interval="@daily",
+    default_args=default_args,
+    catchup=False,
+) as dag:
 
     is_forex_rates_available = HttpSensor(
         task_id="is_forex_rates_available",
@@ -21,5 +26,5 @@ with DAG("forex_data_pipeline", start_date=datetime(2021, 1 ,1),
         endpoint="marclamberti/f45f872dea4dfd3eaa015a4a1af4b39b",
         response_check=lambda response: "rates" in response.text,
         poke_interval=5,
-        timeout=20
+        timeout=20,
     )

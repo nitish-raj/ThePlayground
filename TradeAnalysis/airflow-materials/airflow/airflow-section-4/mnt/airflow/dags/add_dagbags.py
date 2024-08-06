@@ -1,4 +1,4 @@
-# Script to add new DAGs folders using 
+# Script to add new DAGs folders using
 # the class DagBag
 # Paths must be absolute
 """import os

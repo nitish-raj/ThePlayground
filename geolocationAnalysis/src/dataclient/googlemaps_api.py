@@ -10,6 +10,7 @@ logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
+
 class GoogleMapsClient:
     """
     A client for interacting with the Google Maps API.
@@ -68,7 +69,6 @@ class GoogleMapsClient:
 
         payload = {
             "location": location,
-            
         }
 
         headers = {
