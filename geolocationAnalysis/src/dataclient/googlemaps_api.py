@@ -1,6 +1,6 @@
 import requests
 import time
-from ..models.locations import Place, PlaceDetail
+from ..models.locations import Place, PlaceDetail, PlaceV2
 from typing import List, Tuple
 import logging
 
@@ -22,9 +22,11 @@ class GoogleMapsClient:
         api_key (str): The API key required for making requests to the Google Maps API.
     """
 
-    def __init__(self, api_key, base_url):
+    def __init__(self, api_key, base_url, place_types:str|List = [], max_results:int = 20 ):
         self.api_key = api_key
         self.base_url = base_url
+        self.place_types = place_types
+        self.max_results = max_results
 
     def get_coordinates_google(self, address: str) -> Tuple[float, float]:
         """
@@ -66,15 +68,7 @@ class GoogleMapsClient:
         """
         all_places = []
         url = f"{self.base_url}/place/nearbysearch/json?location={location}&radius={radius}&key={self.api_key}"
-
-        payload = {
-            "location": location,
-        }
-
-        headers = {
-            "Content-Type": "application/json",
-        }
-
+         
         while url:
             try:
                 response = requests.get(url)
@@ -90,7 +84,61 @@ class GoogleMapsClient:
                 time.sleep(2)  # Add a delay before making the next request
                 url = f"{self.base_url}/place/nearbysearch/json?pagetoken={next_page_token}&key={self.api_key}"
             else:
-                url = None
+                url = None 
+
+        return [self._convert_to_place(result) for result in all_places]
+
+    def get_all_places_v2(self, latitude: float|int, longitude: float|int, radius: int) -> List[Place]:
+        """
+        Fetch all places within a given radius of a location using the Place Search API.
+
+        Args:
+            location (str): The location to search around, in the format "latitude,longitude".
+            radius (int): The radius in meters to search within.
+
+        Returns:
+            List[Place]: A list of Place objects representing the nearby places.
+        """
+        all_places = []
+        for place_type in self.place_types:
+            for preference in ["DISTANCE", "RATING"]:
+
+                # Prepare the request payload
+                payload = {
+                "includedTypes": [place_type],
+                "locationRestriction": {
+                    "circle": {
+                        "center": {
+                            "latitude": latitude,
+                            "longitude": longitude
+                        },
+                        "radius": radius
+                    }
+                },
+                "maxResultCount": self.max_results,
+                "rankPreference": preference
+                }
+
+                # Prepare the headers
+                headers = {
+                "Content-Type": "application/json",
+                "X-Goog-Api-Key": self.api_key,
+                "X-Goog-FieldMask": (
+                        "places.businessStatus,places.displayName,places.formattedAddress,"
+                        "places.googleMapsUri,places.id,places.location,places.plusCode,"
+                        "places.primaryType,places.types,places.internationalPhoneNumber,"
+                        "places.nationalPhoneNumber,places.priceLevel,places.rating,"
+                        "places.userRatingCount,places.websiteUri,places.delivery,"
+                        "places.parkingOptions,places.paymentOptions,places.outdoorSeating,"
+                        "places.reservable"
+                        )
+                }
+
+                response = requests.post(f'{self.base_url}:searchNearby', json=payload, headers=headers)
+
+                places = response.json()
+
+                all_places.extend(places['places'])
 
         return [self._convert_to_place(result) for result in all_places]
 
@@ -107,7 +155,7 @@ class GoogleMapsClient:
         all_place_details = []
 
         for place_id in place_ids:
-            details_url = f"{self.base_url}/place/details/{place_id}?key={self.api_key}"
+            details_url = f"{self.base_url}/place/details/json?place_id={place_id}&key={self.api_key}"
             details_response = requests.get(details_url)
             place_details = details_response.json()
 
@@ -136,7 +184,44 @@ class GoogleMapsClient:
         latitude = result["geometry"]["location"]["lat"]
         longitude = result["geometry"]["location"]["lng"]
         return Place(place_id, name, vicinity, latitude, longitude)
+    
+    @staticmethod
+    def _convert_to_place_v2(result: dict) -> PlaceV2:
+        """
+        Convert a Google Maps API result to a PlaceV2 object.
 
+        Args:
+            result (dict): The result dictionary from the Google Maps API.
+
+        Returns:
+            PlaceV2: A PlaceV2 object representing the place.
+        """
+        place_id = result["id"]
+        types = result["types"]
+        phoneNumber = result.get("international_phone_number", "N/A")
+        internationalPhoneNumber = result.get("international_phone_number", "N/A")
+        formattedAddress = result.get("formatted_address", "N/A")
+        globalCode = result.get("plus_code", {}).get("global_code", "N/A")
+        compoundCode = result.get("plus_code", {}).get("compound_code", "N/A")
+        latitude = result.get("location",{}).get("latitude", 0.0)
+        longitude = result.get("location", {}).get("longitude", 0.0)
+        rating = result.get("rating", 0.0)
+        googleMapsUri = result.get("google_maps_uri", "N/A")
+        websiteUri = result.get("website_uri", "N/A")
+        businessStatus = result.get("business_status", "N/A")
+        userRatingCount = result.get("user_ratings_total", 0)
+        displayName = result.get("name", "N/A")
+        delivery = result.get("delivery", False)
+        primaryType = result.get("primary_type", "N/A")
+        acceptsCreditCards = result.get("payment_options", {}).get("accepts_credit_cards", False)
+        acceptsDebitCards = result.get("payment_options", {}).get("accepts_debit_cards", False)
+        acceptsCashOnly = result.get("payment_options", {}).get("accepts_cash_only", False)
+        acceptsNfc = result.get("payment_options", {}).get("accepts_nfc", False)
+        return PlaceV2(place_id, types, phoneNumber, internationalPhoneNumber, formattedAddress, 
+                       globalCode, compoundCode, latitude, longitude, rating, googleMapsUri, websiteUri, 
+                       businessStatus, userRatingCount, displayName, delivery, primaryType, acceptsCreditCards, 
+                       acceptsDebitCards, acceptsCashOnly, acceptsNfc)
+    
     @staticmethod
     def _convert_to_placedetail(result: dict) -> PlaceDetail:
         """
