@@ -3,3 +3,5 @@ pandas
 requests
 wheel
 dbt
+googlemaps
+google-maps-places

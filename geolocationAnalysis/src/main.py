@@ -18,6 +18,7 @@ def main():
     config = ConfigParser()
     config_file = os.path.join(os.path.dirname(__file__), "..", ".config")
     config.read(config_file)
+    # Initialize the database handler
 
     place_types = ['discount_store',
                     'gift_shop',

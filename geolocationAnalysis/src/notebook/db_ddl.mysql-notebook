@@ -1,0 +1,371 @@
+{
+    "type": "MySQLNotebook",
+    "version": "1.0",
+    "caption": "DB Notebook",
+    "content": "\\about\n-- drop table staging.uw_data_engineer;\nCREATE TABLE staging.uw_data_engineer (\n    id INT AUTO_INCREMENT PRIMARY KEY,\n    Title1 VARCHAR(255),\n    textlight2 VARCHAR(255),\n    textligh1 VARCHAR(255),\n    upnlink_URL1 VARCHAR(500),\n    upnlink1 VARCHAR(255),\n    Info1 VARCHAR(255),\n    Inf1 VARCHAR(255),\n    Inf2 VARCHAR(255),\n    m1 TEXT,\n    m2 VARCHAR(255),\n    highlight1 VARCHAR(255),\n    m3 VARCHAR(255),\n    highligh1 VARCHAR(255),\n    m4 VARCHAR(255),\n    highligh2 VARCHAR(255),\n    highligh3 VARCHAR(255),\n    m5 VARCHAR(255),\n    air3token1 VARCHAR(255),\n    air3toke1 VARCHAR(255),\n    air3toke2 VARCHAR(255),\n    air3toke3 VARCHAR(255),\n    air3toke4 VARCHAR(255),\n    air3toke5 VARCHAR(255),\n    Title VARCHAR(255),\n    textlight VARCHAR(255),\n    textlight1 VARCHAR(255),\n    upnlink_URL VARCHAR(255),\n    upnlink VARCHAR(255),\n    Info VARCHAR(255),\n    Info2 VARCHAR(255),\n    Info3 VARCHAR(255),\n    mb0 TEXT,\n    mb04 VARCHAR(255),\n    highlight VARCHAR(255),\n    mb05 VARCHAR(255),\n    highlight6 VARCHAR(255),\n    mb07 VARCHAR(255),\n    highlight8 VARCHAR(255),\n    highlight9 VARCHAR(255),\n    mb010 VARCHAR(255),\n    air3token VARCHAR(255),\n    air3token11 VARCHAR(255),\n    air3token12 VARCHAR(255),\n    air3token13 VARCHAR(255),\n    air3token14 VARCHAR(255),\n    air3token15 VARCHAR(255)\n);\n\n-- Add indexes for potentially frequently searched columns\nCREATE INDEX idx_Title1 ON staging.uw_data_engineer(Title1);\nCREATE INDEX idx_Title ON staging.uw_data_engineer(Title);\nCREATE INDEX idx_upnlink_URL1 ON staging.uw_data_engineer(upnlink_URL1);\nCREATE INDEX idx_upnlink_URL ON staging.uw_data_engineer(upnlink_URL);\nCREATE TABLE staging.uw_analytics_engineer (\n    id INT AUTO_INCREMENT PRIMARY KEY,\n    Title VARCHAR(100),\n    textlight VARCHAR(50),\n    textlight1 VARCHAR(100),\n    upnlink_URL VARCHAR(500),\n    upnlink VARCHAR(255),\n    upnlink2 VARCHAR(100),\n    Info VARCHAR(255),\n    Info3 VARCHAR(100),\n    Info4 VARCHAR(255),\n    mb0 LONGTEXT,\n    mb05 VARCHAR(100),\n    mb06 VARCHAR(100),\n    air3token VARCHAR(255),\n    air3token7 VARCHAR(255),\n    air3token8 VARCHAR(255),\n    air3token9 VARCHAR(255),\n    air3token10 VARCHAR(255),\n    mb011 VARCHAR(100)\n)\nCREATE TABLE staging.uw_bi_engineer (\n    id INT AUTO_INCREMENT PRIMARY KEY,\n    textlight2 VARCHAR(50),\n    textligh1 VARCHAR(100),\n    upnlink_URL VARCHAR(500),\n    upnlink VARCHAR(255),\n    upnlink_spancontainsclass_highlight VARCHAR(100),\n    upnlink2 VARCHAR(100),\n    Info1 VARCHAR(255),\n    Inf1 VARCHAR(100),\n    Info4 VARCHAR(255),\n    m1 LONGTEXT,\n    highlightcolor1 VARCHAR(255),\n    air3token1 VARCHAR(255),\n    air3token5 VARCHAR(255),\n    air3token6 VARCHAR(255),\n    air3token7 VARCHAR(255),\n    air3token8 VARCHAR(255),\n    air3token9 VARCHAR(100),\n    Title VARCHAR(255),\n    Title_URL VARCHAR(500),\n    textlight VARCHAR(50),\n    textlight1 VARCHAR(100),\n    Info VARCHAR(255),\n    Info2 VARCHAR(100),\n    Info3 VARCHAR(255),\n    mb0 LONGTEXT,\n    mb04 VARCHAR(100),\n    highlight VARCHAR(100),\n    mb05 VARCHAR(100),\n    highlight6 VARCHAR(100),\n    mb07 VARCHAR(100),\n    highlight8 VARCHAR(100),\n    mb09 VARCHAR(100),\n    highlight10 VARCHAR(100),\n    mb011 VARCHAR(50),\n    highlightcolor VARCHAR(255),\n    air3token VARCHAR(255),\n    air3token12 VARCHAR(255),\n    air3token13 VARCHAR(255),\n    air3token14 VARCHAR(100),\n    air3token15 VARCHAR(50),\n    air3token16 VARCHAR(50)\n)\nCREATE TABLE staging.uw_ml_engineer (\n    id INT AUTO_INCREMENT PRIMARY KEY,\n    textlight VARCHAR(50),\n    textlight1 VARCHAR(100),\n    upnlink_URL VARCHAR(500),\n    upnlink VARCHAR(255),\n    Info VARCHAR(100),\n    Info2 VARCHAR(50),\n    Info3 VARCHAR(100),\n    mb0 TEXT,\n    highlight VARCHAR(100),\n    highlight4 VARCHAR(100),\n    highlight5 VARCHAR(100),\n    air3token VARCHAR(100),\n    air3token6 VARCHAR(100),\n    air3token7 VARCHAR(100),\n    air3token8 VARCHAR(100)\n);  \nCREATE TABLE staging.uw_data_analyst (\n    id INT AUTO_INCREMENT PRIMARY KEY,\n    Title VARCHAR(255),\n    Title_URL VARCHAR(500),\n    textlight VARCHAR(50),\n    textlight1 VARCHAR(100),\n    upnlink VARCHAR(50),\n    upnlink2 VARCHAR(50),\n    Info VARCHAR(100),\n    Info3 VARCHAR(50),\n    Info4 VARCHAR(100),\n    mb0 TEXT,\n    air3token VARCHAR(100),\n    air3token5 VARCHAR(100),\n    air3token6 VARCHAR(100),\n    air3token7 VARCHAR(100),\n    air3token8 VARCHAR(100),\n    air3token9 VARCHAR(50),\n    air3token10 VARCHAR(50)\n);\n\n\n\n",
+    "options": {
+        "tabSize": 4,
+        "indentSize": 4,
+        "insertSpaces": true,
+        "defaultEOL": "LF",
+        "trimAutoWhitespace": true
+    },
+    "viewState": {
+        "cursorState": [
+            {
+                "inSelectionMode": false,
+                "selectionStart": {
+                    "lineNumber": 162,
+                    "column": 1
+                },
+                "position": {
+                    "lineNumber": 162,
+                    "column": 1
+                }
+            }
+        ],
+        "viewState": {
+            "scrollLeft": 0,
+            "firstPosition": {
+                "lineNumber": 138,
+                "column": 1
+            },
+            "firstPositionDeltaTop": -7
+        },
+        "contributionsState": {
+            "editor.contrib.folding": {},
+            "editor.contrib.wordHighlighter": false
+        }
+    },
+    "contexts": [
+        {
+            "state": {
+                "start": 1,
+                "end": 1,
+                "language": "mysql",
+                "result": {
+                    "type": "text",
+                    "text": [
+                        {
+                            "type": 2,
+                            "content": "Welcome to the MySQL Shell - DB Notebook.\n\nPress Ctrl+Enter to execute the code block.\n\nExecute \\sql to switch to SQL, \\js to JavaScript and \\ts to TypeScript mode.\nExecute \\help or \\? for help;Welcome to the MySQL Shell - DB Notebook.\n\nPress Ctrl+Enter to execute the code block.\n\nExecute \\sql to switch to SQL, \\js to JavaScript and \\ts to TypeScript mode.\nExecute \\help or \\? for help;Welcome to the MySQL Shell - DB Notebook.\n\nPress Ctrl+Enter to execute the code block.\n\nExecute \\sql to switch to SQL, \\js to JavaScript and \\ts to TypeScript mode.\nExecute \\help or \\? for help;Welcome to the MySQL Shell - DB Notebook.\n\nPress Ctrl+Enter to execute the code block.\n\nExecute \\sql to switch to SQL, \\js to JavaScript and \\ts to TypeScript mode.\nExecute \\help or \\? for help;",
+                            "language": "ansi"
+                        }
+                    ]
+                },
+                "currentHeight": 28,
+                "currentSet": 1,
+                "statements": [
+                    {
+                        "delimiter": ";",
+                        "span": {
+                            "start": 0,
+                            "length": 6
+                        },
+                        "contentStart": 0,
+                        "state": 0
+                    }
+                ]
+            },
+            "data": []
+        },
+        {
+            "state": {
+                "start": 2,
+                "end": 57,
+                "language": "mysql",
+                "result": {
+                    "type": "text",
+                    "text": [
+                        {
+                            "type": 4,
+                            "index": 0,
+                            "resultId": "0a2bea6d-068e-4673-a70e-e0793f03c069",
+                            "content": "OK, 0 records retrieved in 26.47ms"
+                        },
+                        {
+                            "type": 4,
+                            "index": 1,
+                            "resultId": "444cceb4-1da9-43b2-aa2f-12fc53948521",
+                            "content": "OK, 0 records retrieved in 17.526ms"
+                        },
+                        {
+                            "type": 4,
+                            "index": 2,
+                            "resultId": "b4bcccee-12dc-4266-dd8a-ee1e0f689be0",
+                            "content": "OK, 0 records retrieved in 17.959ms"
+                        },
+                        {
+                            "type": 4,
+                            "index": 3,
+                            "resultId": "d4b896fd-1602-4db9-9902-959a492b200b",
+                            "content": "OK, 0 records retrieved in 20.126ms"
+                        },
+                        {
+                            "type": 4,
+                            "index": 4,
+                            "resultId": "d8037744-a9bb-448a-c7dd-e8a414cd27c0",
+                            "content": "OK, 0 records retrieved in 17.639ms"
+                        }
+                    ]
+                },
+                "currentHeight": 28,
+                "currentSet": 1,
+                "statements": [
+                    {
+                        "delimiter": ";",
+                        "span": {
+                            "start": 0,
+                            "length": 1317
+                        },
+                        "contentStart": 40,
+                        "state": 0
+                    },
+                    {
+                        "delimiter": ";",
+                        "span": {
+                            "start": 1317,
+                            "length": 121
+                        },
+                        "contentStart": 1378,
+                        "state": 0
+                    },
+                    {
+                        "delimiter": ";",
+                        "span": {
+                            "start": 1438,
+                            "length": 59
+                        },
+                        "contentStart": 1439,
+                        "state": 0
+                    },
+                    {
+                        "delimiter": ";",
+                        "span": {
+                            "start": 1497,
+                            "length": 73
+                        },
+                        "contentStart": 1498,
+                        "state": 0
+                    },
+                    {
+                        "delimiter": ";",
+                        "span": {
+                            "start": 1570,
+                            "length": 71
+                        },
+                        "contentStart": 1571,
+                        "state": 0
+                    }
+                ]
+            },
+            "data": []
+        },
+        {
+            "state": {
+                "start": 58,
+                "end": 78,
+                "language": "mysql",
+                "result": {
+                    "type": "text",
+                    "text": [
+                        {
+                            "type": 4,
+                            "index": 0,
+                            "resultId": "1dc1d5a2-aaf4-49a1-97fd-0d822de04947",
+                            "content": "OK, 0 records retrieved in 24.726ms"
+                        }
+                    ]
+                },
+                "currentHeight": 28,
+                "currentSet": 1,
+                "statements": [
+                    {
+                        "delimiter": ";",
+                        "span": {
+                            "start": 0,
+                            "length": 551
+                        },
+                        "contentStart": 0,
+                        "state": 3
+                    }
+                ]
+            },
+            "data": []
+        },
+        {
+            "state": {
+                "start": 79,
+                "end": 122,
+                "language": "mysql",
+                "result": {
+                    "type": "text",
+                    "text": [
+                        {
+                            "type": 4,
+                            "index": 0,
+                            "resultId": "979731ff-4502-40e3-d099-debd8664a0e7",
+                            "content": "OK, 0 records retrieved in 26.493ms"
+                        }
+                    ]
+                },
+                "currentHeight": 28,
+                "currentSet": 1,
+                "statements": [
+                    {
+                        "delimiter": ";",
+                        "span": {
+                            "start": 0,
+                            "length": 1203
+                        },
+                        "contentStart": 0,
+                        "state": 3
+                    }
+                ]
+            },
+            "data": []
+        },
+        {
+            "state": {
+                "start": 123,
+                "end": 140,
+                "language": "mysql",
+                "result": {
+                    "type": "text",
+                    "text": [
+                        {
+                            "type": 4,
+                            "index": 0,
+                            "resultId": "5c252e33-d61d-4159-b27a-874548a9ff3c",
+                            "content": "OK, 0 records retrieved in 27.6ms"
+                        }
+                    ]
+                },
+                "currentHeight": 28,
+                "currentSet": 1,
+                "statements": [
+                    {
+                        "delimiter": ";",
+                        "span": {
+                            "start": 0,
+                            "length": 475
+                        },
+                        "contentStart": 0,
+                        "state": 0
+                    },
+                    {
+                        "delimiter": ";",
+                        "span": {
+                            "start": 475,
+                            "length": 2
+                        },
+                        "contentStart": 474,
+                        "state": 3
+                    }
+                ]
+            },
+            "data": []
+        },
+        {
+            "state": {
+                "start": 141,
+                "end": 161,
+                "language": "mysql",
+                "result": {
+                    "type": "text",
+                    "text": [
+                        {
+                            "type": 4,
+                            "index": 0,
+                            "resultId": "d85d0dc5-2405-459e-8563-272eb6abd667",
+                            "content": "OK, 0 records retrieved in 26.834ms"
+                        }
+                    ]
+                },
+                "currentHeight": 28,
+                "currentSet": 1,
+                "statements": [
+                    {
+                        "delimiter": ";",
+                        "span": {
+                            "start": 0,
+                            "length": 523
+                        },
+                        "contentStart": 0,
+                        "state": 0
+                    },
+                    {
+                        "delimiter": ";",
+                        "span": {
+                            "start": 523,
+                            "length": 1
+                        },
+                        "contentStart": 522,
+                        "state": 3
+                    }
+                ]
+            },
+            "data": []
+        },
+        {
+            "state": {
+                "start": 162,
+                "end": 162,
+                "language": "mysql",
+                "currentSet": 1,
+                "statements": [
+                    {
+                        "delimiter": ";",
+                        "span": {
+                            "start": 0,
+                            "length": 0
+                        },
+                        "contentStart": 0,
+                        "state": 0
+                    }
+                ]
+            },
+            "data": []
+        },
+        {
+            "state": {
+                "start": 163,
+                "end": 163,
+                "language": "mysql",
+                "currentSet": 1,
+                "statements": [
+                    {
+                        "delimiter": ";",
+                        "span": {
+                            "start": 0,
+                            "length": 0
+                        },
+                        "contentStart": 0,
+                        "state": 0
+                    }
+                ]
+            },
+            "data": []
+        },
+        {
+            "state": {
+                "start": 164,
+                "end": 164,
+                "language": "mysql",
+                "currentSet": 1,
+                "statements": [
+                    {
+                        "delimiter": ";",
+                        "span": {
+                            "start": 0,
+                            "length": 0
+                        },
+                        "contentStart": 0,
+                        "state": 0
+                    }
+                ]
+            },
+            "data": []
+        }
+    ]
+}
